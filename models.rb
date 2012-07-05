@@ -18,6 +18,23 @@ class Owner
 	def self.find_by_horse_name(name)
 		self.where("horse.name" => name).first()
 	end
+
+	def self.find_by_nkid(id)
+		o = Owner.where("horse.nkid" => id).first
+		{"name" => o.horse['name'],
+		 "owner" => o.name,
+		 "year" => o.year,
+		 "seq" => o.seq,
+		 "sex" => o.horse['sex'],
+		 "trainer" => o.horse['trainer'],
+		 "father" => o.horse['father'],
+		 "mother" => o.horse['mother'],
+		 "bms" => o.horse['bms'],
+		 "real_owner" => o.horse['real_owner'],
+		 "farm" => o.horse['farm']
+		}
+	end
+
 end
 
 class Horse
