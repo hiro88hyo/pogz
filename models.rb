@@ -19,8 +19,7 @@ class Owner
 		self.where("horse.name" => name).first()
 	end
 
-	def self.find_by_nkid(id)
-		o = Owner.where("horse.nkid" => id).first
+	def self.build_responce(o)
 		{"name" => o.horse['name'],
 		 "owner" => o.name,
 		 "year" => o.year,
@@ -33,6 +32,10 @@ class Owner
 		 "real_owner" => o.horse['real_owner'],
 		 "farm" => o.horse['farm']
 		}
+	end
+	
+	def self.find_by_nkid(id)
+		return build_responce(Owner.where("horse.nkid" => id).first)
 	end
 
 end
@@ -72,6 +75,37 @@ class Race
 		if owner
 			return self.where("result.nkid" => owner.horse["nkid"]).desc(:race_date)
 		end
+	end
+	
+	def self.build_responce(r)
+		{"rid" => r.race_id,
+		 "race_date" => r.race_date,
+		 "place" => r.place,
+		 "race_num" => r.race_num,
+		 "name" => r.name,
+		 "length" => r.length,
+		 "condition" => r.condition,
+		 "horses_num" => r.horses_num,
+		 "r_nkid" =>  r.result['nkid'],
+		 "r_post" =>  r.result['post'],
+		 "r_position" =>  r.result['position'],
+		 "r_odds" =>  r.result['odds'],
+		 "r_popularity" =>  r.result['popularity'],
+		 "r_jocky" =>  r.result['jocky'],
+		 "r_place" =>  r.result['place'],
+		 "r_prize" =>  r.result['prize']	 
+		}
+	end
+	
+	def self.find_by_nkid(id)
+		res = []
+		r = self.where("result.nkid" => id).asc(:race_date)
+		if r
+			r.each{|race|
+				res.push(build_responce(race))
+			}
+		end
+		return res
 	end
 end
 

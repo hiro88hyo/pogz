@@ -9,3 +9,26 @@
 <%= @horse['bms'] %><br />
 <%= @horse['real_owner'] %><br />
 <%= @horse['farm'] %>
+<p>
+レース結果
+<table>
+<% for race in @races %>
+<tr>
+<td><%= race['race_date'] %></td>
+<td><%= race['place'] %></td>
+<td><%= race['race_num'] %></td>
+<td><%= race['name'] %></td>
+<td><%= race['horses_num'] %></td>
+<td><%= race['r_post'] %></td>
+<td><%= race['r_position'] %></td>
+<td><%= race['r_odds'] %></td>
+<td><%= race['r_popularity'] %></td>
+<td><%= race['r_place'] %></td>
+<td><%= race['r_jocky'] %></td>
+<td><%= race['length'] %></td>
+<td><%= race['condition'] %></td>
+<td><%= race['r_prize'] %></td>
+</tr>
+<% end %>
+</table>
+</p>
