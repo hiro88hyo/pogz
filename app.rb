@@ -23,6 +23,7 @@ helpers do
     				nkid:this.result.nkid
     			};
     			var p_1st = 0, p_2nd = 0, p_3rd = 0, p_4th = 0, p_5th = 0;
+    			var prize = this.result.prize;
     			switch(this.result.place){
     				case 1:
     					p_1st = 1;
@@ -40,16 +41,16 @@ helpers do
     					p_5th = 1;
     					break;
 		    	}
-    			emit(key, {pr:this.result.prize, count: 1, p_1st: p_1st, p_2nd: p_2nd, p_3rd: p_3rd, p_4th: p_4th, p_5th: p_5th});
+    			emit(key, {prize: prize, count: 1, p_1st: p_1st, p_2nd: p_2nd, p_3rd: p_3rd, p_4th: p_4th, p_5th: p_5th});
 			}
 		}
 
 		r = %Q{
 			function (key, values) {
-    			var pr = 0, co = 0;
+    			var pr = 0.0, co = 0;
     			var p1st = 0, p2nd = 0, p3rd = 0, p4th = 0, p5th = 0;
     			values.forEach(function (value) {
-    				pr += value.pr;
+    				pr += value.prize;
     				co += value.count;
     				p1st += value.p_1st;
     				p2nd += value.p_2nd;
@@ -92,7 +93,7 @@ get '/mapreduce' do
 	@mr_results = map_reduce()
 	res = ''
 	@mr_results.each{|r|
-		res << "nkid:#{r['nkid']} races:#{r['races']} prize:#{r['prize']} 1st:#{r['p1']} 2nd:#{r['p2']} 3rd:#{r['p3']} 4th:#{r['p4']} 5th:#{r['p5']}<br/>"
+		res << "nkid:<a href='/horse/#{r['nkid']}'>#{r['nkid']}</a> races:#{r['races']} prize:#{r['prize']} 1st:#{r['p1']} 2nd:#{r['p2']} 3rd:#{r['p3']} 4th:#{r['p4']} 5th:#{r['p5']}<br/>"
 	}
 	res
 end
