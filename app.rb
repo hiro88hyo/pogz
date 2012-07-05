@@ -24,5 +24,6 @@ end
 
 get '/horse/:nkid' do
 	@horse = Owner.find_by_nkid(params[:nkid].to_i)
+	@races = Race.find_by_nkid(params[:nkid].to_i)
 	erb :horse	
 end
