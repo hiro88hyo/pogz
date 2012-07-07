@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'rubygems'
 require 'sinatra'
+require 'date'
 require './models'
 
 configure do
@@ -17,6 +18,15 @@ helpers do
 	end
 	
 	def map_reduce
+		hrs = {}
+		Owner.where().each{|h|
+			hrs[h.horse['nkid']] = {
+				'name' => h.horse['name'],
+				'owner' => h.name,
+				'year' => h.year,
+				'seq' => h.seq
+			}
+		}
 		m = %Q{
 			function () {
     			var key = {
@@ -62,9 +72,24 @@ helpers do
 			}
 		}
 		res = []
-		Race.collection.map_reduce(m,r, {:out => {:inline => true}, :raw => true})['results'].each{|r|
+		Race.collection.map_reduce(m,r, {
+			:out => {
+					:inline => true
+				},
+			:raw => true,
+			:query => {
+				:race_date => {
+					'$gte' => DateTime.new(2012,1,1).to_time,
+					'$lte' => DateTime.new(2012,3,31).to_time
+				}
+			}
+		})['results'].each{|r|
 			res.push({
 				'nkid' => r['_id']['nkid'].to_i,
+				'name' => hrs[r['_id']['nkid'].to_i]['name'],
+				'owner' => hrs[r['_id']['nkid'].to_i]['owner'],
+				'year' => hrs[r['_id']['nkid'].to_i]['year'].to_i,
+				'seq' => hrs[r['_id']['nkid'].to_i]['seq'].to_i,
 				'races' => r['value']['count'].to_i,
 				'prize' => r['value']['prize'].to_f,
 				'p1' => r['value']['p_1st'].to_i,
@@ -91,9 +116,38 @@ end
 
 get '/mapreduce' do
 	@mr_results = map_reduce()
-	res = ''
-	@mr_results.each{|r|
-		res << "nkid:<a href='/horse/#{r['nkid']}'>#{r['nkid']}</a> races:#{r['races']} prize:#{r['prize']} 1st:#{r['p1']} 2nd:#{r['p2']} 3rd:#{r['p3']} 4th:#{r['p4']} 5th:#{r['p5']}<br/>"
+	@res_owner = @mr_results.group_by{|i|
+		[i['owner'], i['year']]
+	}.reduce({}){|r, kv|
+		res = {
+			'prize' => 0.0,
+			'races' => 0,
+			'p1' => 0,
+			'p2' => 0,
+			'p3' => 0,
+			'p4' => 0,
+			'p5' => 0
+			}
+		kv[1].each{|race|
+			res['prize'] += race['prize']
+			res['races'] += race['races']
+			res['p1'] += race['p1']
+			res['p2'] += race['p2']
+			res['p3'] += race['p3']
+			res['p4'] += race['p4']
+			res['p5'] += race['p5']
+		}
+		r.update({kv[0] => res})
 	}
-	res
+	@res_owner_recalc = {}
+	@res_owner.each_key{|k1|
+		@res_owner_recalc.update({k1 => @res_owner[k1]['prize']*(@res_owner.length-1)})
+		@res_owner.each_key{|k2|
+			if k1!=k2
+				@res_owner_recalc[k1] -= @res_owner[k2]['prize']
+			end
+		}
+	}
+	p @res_owner_recalc
+	erb :mapreduce
 end
