@@ -17,7 +17,7 @@ helpers do
 		return items
 	end
 	
-	def map_reduce
+	def map_reduce(from=nil, to=nil)
 		hrs = {}
 		Owner.where().each{|h|
 			hrs[h.horse['nkid']] = {
@@ -72,17 +72,20 @@ helpers do
 			}
 		}
 		res = []
+		if from
+			query = {:race_date => {
+						'$gte' => from.to_time,
+						'$lte' => to.to_time
+					}}
+		else
+			query = {}
+		end
 		Race.collection.map_reduce(m,r, {
 			:out => {
 					:inline => true
 				},
 			:raw => true,
-			:query => {
-				:race_date => {
-					'$gte' => DateTime.new(2012,1,1).to_time,
-					'$lte' => DateTime.new(2012,3,31).to_time
-				}
-			}
+			:query => query
 		})['results'].each{|r|
 			res.push({
 				'nkid' => r['_id']['nkid'].to_i,
@@ -115,7 +118,14 @@ get '/horse/:nkid' do
 end
 
 get '/mapreduce' do
-	@mr_results = map_reduce()
+	begin
+		d_from = Date.parse(params['from'])
+		d_to = Date.parse(params['to'])
+	rescue ArgumentError
+		d_from = nil
+		d_to = nil
+	end
+	@mr_results = map_reduce(d_from, d_to)
 	@res_owner = @mr_results.group_by{|i|
 		[i['owner'], i['year']]
 	}.reduce({}){|r, kv|
@@ -140,6 +150,8 @@ get '/mapreduce' do
 		r.update({kv[0] => res})
 	}
 	@res_owner_recalc = {}
+	@owners_key = {}
+	
 	@res_owner.each_key{|k1|
 		@res_owner_recalc.update({k1 => @res_owner[k1]['prize']*(@res_owner.length-1)})
 		@res_owner.each_key{|k2|
