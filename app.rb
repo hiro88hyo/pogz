@@ -118,9 +118,16 @@ get '/horse/:nkid' do
 end
 
 get '/mapreduce' do
+	d_from = nil
+	d_to = nil
 	begin
-		d_from = Date.parse(params['from'])
-		d_to = Date.parse(params['to'])
+		if params['from'] and params['to']
+			d_from = Date.parse(params['from'])
+			d_to = Date.parse(params['to'])
+		else
+			d_from = nil
+			d_to = nil
+		end
 	rescue ArgumentError
 		d_from = nil
 		d_to = nil
