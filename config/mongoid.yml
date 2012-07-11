@@ -1,3 +1,11 @@
+<%
+/:\/\/(.+?):(.+?)@(.+?)\/(.+?)$/ =~ ENV['MONGOHQ_URL']
+username = $1
+password = $2
+host = $3
+database = $4
+%>
+
 development:
   sessions:
     default:
@@ -7,8 +15,10 @@ development:
 production:
   sessions:
     default:
+      database: <%= database %>
       hosts:
-        - flame.mongohq.com:27046
-      database: app5628866
-      another:
-        uri: <%= ENV['MONGOHQ_URL'] %>
+        - <%= host %>
+      username: <%= username %>
+      password: <%= password %>
+  options:
+    skip_version_check: true
