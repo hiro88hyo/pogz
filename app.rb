@@ -5,7 +5,7 @@ require 'date'
 require './models'
 
 configure do
-	load File.expand_path('../config/initializers/mongoid.rb',__FILE__)
+	Mongoid.load!('config/mongoid.yml')
 end
 
 helpers do
@@ -17,9 +17,14 @@ helpers do
 		return items
 	end
 	
-	def map_reduce(from=nil, to=nil)
+	def map_reduce(from=nil, to=nil, year=nil)
 		hrs = {}
-		Owner.where().each{|h|
+		if year
+			ons = Owner.where(year: year)
+		else
+			ons = Owner.all()
+		end
+		ons.each{|h|
 			hrs[h.horse['nkid']] = {
 				'name' => h.horse['name'],
 				'owner' => h.name,
@@ -72,21 +77,14 @@ helpers do
 			}
 		}
 		res = []
-		if from
-			query = {:race_date => {
-						'$gte' => from.to_time,
-						'$lte' => to.to_time
-					}}
-		else
-			query = {}
+		col = Race
+		if year
+			col = col.in('result.nkid' => hrs.keys)
 		end
-		Race.collection.map_reduce(m,r, {
-			:out => {
-					:inline => true
-				},
-			:raw => true,
-			:query => query
-		})['results'].each{|r|
+		if from
+			col = col.where(:race_date.gte => from.to_time).where(:race_date.lte => to.to_time)
+		end
+		col.map_reduce(m, r).out(inline: true).each{|r|
 			res.push({
 				'nkid' => r['_id']['nkid'].to_i,
 				'name' => hrs[r['_id']['nkid'].to_i]['name'],
@@ -120,6 +118,7 @@ end
 get '/mapreduce' do
 	d_from = nil
 	d_to = nil
+	year = nil
 	begin
 		if params['from'] and params['to']
 			d_from = Date.parse(params['from'])
@@ -132,7 +131,15 @@ get '/mapreduce' do
 		d_from = nil
 		d_to = nil
 	end
-	@mr_results = map_reduce(d_from, d_to)
+	
+	begin
+		if params['year']
+			year = params['year'].to_i
+		end
+	rescue ArgumentError
+		year = nil
+	end
+	@mr_results = map_reduce(d_from, d_to, year)
 	@res_owner = @mr_results.group_by{|i|
 		[i['owner'], i['year']]
 	}.reduce({}){|r, kv|
