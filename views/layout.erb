@@ -1,22 +1,51 @@
 <!DOCTYPE html>
 <html lang="ja">
-	<head>
-		<meta charset="utf8">
-		<title>pogz</title>
-		<link rel="stylesheet" href="/css/bootstrap.min.css">
-		<style>
-			body {
-        		padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      		}
-      		td.tx_r {
-      			text-align: right;
-      		}
-    	</style>
-	</head>
-	<body>
- 		<%= yield %>
- 		<script src="//code.jquery.com/jquery-1.7.1.min.js"></script>
- 		<script src="/js/bootstrap.min.js"></script>
- 		<script src="/js/application.js"></script>
-	</body>
+  <head>
+    <meta charset="utf8">
+    <title>POGz</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/theme.css" rel="stylesheet">
+        <style>
+      .mgraph{
+        width: 100%;
+        height: 240px;
+      }
+    </style>
+  </head>
+  <body id="dashboard">
+    <!-- Top navigation bar -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+	<div class="container-fluid">
+	  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </a>
+	  <a class="brand" href="index.html">pogz</a>
+	  <div class="btn-group pull-right">
+	    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	      <i class="icon-user"></i> Guest
+	      <span class="caret"></span>
+	    </a>
+	    <ul class="dropdown-menu">
+	      <li><a href="#">Profile</a></li>
+	      <li><a href="#">Settings</a></li>
+	      <li><a href="login.html">Logout</a></li>
+	    </ul>
+	  </div>
+	  <div class="nav-collapse">
+	    <ul class="nav">
+	      <li><a href="#">Home</a></li>
+	      <li><a href="#">Help</a></li>
+	    </ul>
+	  </div><!--/.nav-collapse -->
+	</div>
+      </div>
+    </div>
+    <%= yield %>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/raphael-min.js"></script>
+    <script src="/js/morris.min.js"></script>
+  </body>
 </html>
