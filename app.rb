@@ -11,7 +11,7 @@ end
 helpers do
   def horses
     items = Array.new
-    Owner.find_horses_by_owner("エトゥ").asc(:year).each{|h|
+    Owner.find_horses_by_owner("繧ｨ繝医ぇ").asc(:year).each{|h|
       items.push(h.horse['name'])
     }
     return items
