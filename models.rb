@@ -44,6 +44,7 @@ class Horse
   include Mongoid::Document
 
   field :nkid, type: Integer
+  field :status, type: String
   field :name, type: String
   field :sex, type: String
   field :area, type: String
