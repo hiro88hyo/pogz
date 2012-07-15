@@ -70,7 +70,6 @@ class Race
   field :condition, type: String
   field :horses_num, type: Integer
   field :weather, type: String
-  field :weight, type: Float
   embeds_one :result
 
   def self.find_race_by_horse(name)
@@ -83,6 +82,7 @@ class Race
   def self.build_responce(r)
     {"rid" => r.race_id,
       "race_date" => r.race_date,
+      "wheather" => r.wheather,
       "place" => r.place,
       "race_num" => r.race_num,
       "name" => r.name,
@@ -95,6 +95,7 @@ class Race
       "r_odds" =>  r.result['odds'],
       "r_popularity" =>  r.result['popularity'],
       "r_jocky" =>  r.result['jocky'],
+      "r_weight" =>  r.result['weight'],
       "r_place" =>  r.result['place'],
       "r_prize" =>  r.result['prize']
     }
@@ -121,6 +122,7 @@ class Result
   field :odds, type: Float
   field :popularity, type: Integer
   field :jocky, type: String
+  field :weight, type: Float, default: 0.0
   field :place, type: Integer
   field :prize, type: Float, default: 0.0
   embedded_in :race

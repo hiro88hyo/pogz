@@ -1,16 +1,20 @@
+<%= erb :sidebar %>
+
 <table>
 <tr><th>馬名</th><th>オーナー</th><th>出走回数</th><th>賞金</th><th>１着</th><th>２着</th><th>３着</th><th>４着</th><th>５着</th></tr>
 <% for r in @mr_results %>
 <tr>
-<td><a href='/horse/<%= r['nkid'] %>'><%= r['name'] %></a></td>
-<td><%= r['owner'] %></td>
-<td><%= r['races'] %></td>
-<td><%= r['prize'] %></td>
-<td><%= r['p1'] %></td>
-<td><%= r['p2'] %></td>
-<td><%= r['p3'] %></td>
-<td><%= r['p4'] %></td>
-<td><%= r['p5'] %></td>
+<td><a href='/horse/<%=h r['nkid'] %>'><%=h r['name'] %></a></td>
+<td><%=h r['owner'] %></td>
+<td><%=h r['races'] %></td>
+<td><%=h r['prize'] %></td>
+<td><%=h r['p1'] %></td>
+<td><%=h r['p2'] %></td>
+<td><%=h r['p3'] %></td>
+<td><%=h r['p4'] %></td>
+<td><%=h r['p5'] %></td>
 </tr>
 <% end %>
 </table>
+
+<%= erb :sidebar_close %>

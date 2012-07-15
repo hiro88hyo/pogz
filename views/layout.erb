@@ -5,46 +5,46 @@
     <title>POGz</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/theme.css" rel="stylesheet">
-        <style>
-      .mgraph{
-        width: 100%;
-        height: 240px;
-      }
+    <style>
+      .tx_r{text-align: right;}
     </style>
   </head>
   <body id="dashboard">
     <!-- Top navigation bar -->
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-	<div class="container-fluid">
-	  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	  </a>
-	  <a class="brand" href="index.html">pogz</a>
-	  <div class="btn-group pull-right">
-	    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-	      <i class="icon-user"></i> Guest
-	      <span class="caret"></span>
-	    </a>
-	    <ul class="dropdown-menu">
-	      <li><a href="#">Profile</a></li>
-	      <li><a href="#">Settings</a></li>
-	      <li><a href="login.html">Logout</a></li>
-	    </ul>
-	  </div>
-	  <div class="nav-collapse">
-	    <ul class="nav">
-	      <li><a href="#">Home</a></li>
-	      <li><a href="#">Help</a></li>
-	    </ul>
-	  </div><!--/.nav-collapse -->
-	</div>
-      </div>
-    </div>
+	    <div class="container-fluid">
+	      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </a>
+	      <a class="brand" href="index.html">pogz</a>
+	      <div class="btn-group pull-right">
+	        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	          <i class="icon-user"></i> Guest
+	          <span class="caret"></span>
+	        </a>
+	        <ul class="dropdown-menu">
+	          <li><a href="#">Profile</a></li>
+	          <li><a href="#">Settings</a></li>
+	          <li><a href="login.html">Logout</a></li>
+	        </ul>
+	      </div><!-- ./btn-group pull-right -->
+	      <div class="nav-collapse">
+	        <ul class="nav">
+	          <li><a href="#">Home</a></li>
+	          <li><a href="#">Help</a></li>
+	        </ul>
+	      </div><!--/.nav-collapse -->
+	    </div><!--/.container-fluid -->
+      </div><!--/.navbar-inner -->
+    </div><!--/.navbar navbar-fixed-top -->
+    <!-- Top navigation bar -->
+    
     <%= yield %>
-    <script src="/js/jquery.js"></script>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="/js/raphael-min.js"></script>
     <script src="/js/morris.min.js"></script>
   </body>
