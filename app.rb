@@ -9,20 +9,26 @@ configure do
 end
 
 helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
+  alias_method :u, :escape
   def horses
     items = Array.new
-    Owner.find_horses_by_owner("繧ｨ繝医ぇ").asc(:year).each{|h|
+    Owner.find_horses_by_owner("エトゥ").asc(:year).each{|h|
       items.push(h.horse['name'])
     }
     return items
   end
 
-  def map_reduce(from=nil, to=nil, year=nil)
+  def map_reduce(from=nil, to=nil, year=nil, nkid=nil)
     hrs = {}
     if year
       ons = Owner.where(year: year)
     else
       ons = Owner.all()
+    end
+    if nkid
+      ons = Owner.where('horse.nkid' => nkid)
     end
     ons.each{|h|
       hrs[h.horse['nkid']] = {
@@ -76,7 +82,7 @@ helpers do
     }
     res = []
     col = Race
-    if year
+    if year or nkid
       col = col.in('result.nkid' => hrs.keys)
     end
     if from
@@ -103,17 +109,20 @@ helpers do
 end
 
 get '/' do
-            @items = horses()
+  @items = horses()
   erb :index
 end
 
 get '/horse/:nkid' do
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
+  @results = map_reduce(nil, nil, nil, params[:nkid].to_i)
+  p @results
   erb :horse
 end
 
 get '/mapreduce' do
+  @items = horses()
   d_from = nil
   d_to = nil
   year = nil

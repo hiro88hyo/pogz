@@ -5,7 +5,6 @@ password = $2
 host = $3
 database = $4
 %>
-
 development:
   sessions:
     default:
