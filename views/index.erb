@@ -1,2 +1,71 @@
 <%= erb :sidebar, layout=>false %>
+      <div>
+        <ul class="breadcrumb">
+          <li class="active">Dashboard</li>
+        </ul>
+      </div>
+      <div class="row-fluid">
+        <div class="span3 column" id="col1">
+	      <div class="box" id="box1">
+	        <h4 class="box-header round-top">現在の順位</h4>
+	        <div class="box-container-toggle">
+	          <div class="box-content">
+		        <form class="form-inline">
+		          <div class="controls docs-input-sizes">
+		            <select class="span6" id="select01">
+		              <option>総合</option>
+		              <option>2歳馬</option>
+		              <option>3歳馬</option>
+		              <option>4歳馬</option>
+		            </select>
+		          </div><!-- /controls docs-input-sizes -->
+		        </form>
+		        <table class="table table-striped">
+		          <tr><td><i class="icon-minus"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		          <tr><td><i class="icon-arrow-up"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		          <tr><td><i class="icon-arrow-down"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		          <tr><td><i class="icon-minus"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		          <tr><td><i class="icon-minus"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		          <tr><td><i class="icon-minus"></i></td><td>5,000</td><td>ぽっくん</td></tr>
+		        </table>
+	          </div><!-- /box-content -->
+	        </div><!-- /box-container-toggle -->
+	      </div><!-- /box -->
+	    </div><!-- /#col1 -->
+        <div class="span9 column" id="col1">
+	      <div class="box" id="box1">
+	        <h4 class="box-header round-top">獲得賞金の推移</h4>
+	        <div class="box-container-toggle">
+	          <div class="box-content">
+		        <div id="hero-graph" class="mgraph"></div>
+	          </div><!-- /box-content -->
+	        </div><!-- /box-container-toggle -->
+	      </div><!-- /box -->
+	    </div><!-- /span9 -->
+      </div><!-- /row-fluid -->
+      <div class="row-fluid">
+	    <div class="span12 column" id="col2">
+	      <div class="box" id="box2">
+	        <h4 class="box-header round-top">最近のレース結果</h4>
+	        <div class="box-container-toggle">
+	          <div class="box-content">
+		        <table class="table table-striped">
+		          <% for race in @recent %>
+		          <tr>
+		            <td><%=h race['date'] %></td>
+		            <td><%=h race['place'] %><%=h race['race_num'] %>R</td>
+		            <td><%=h race['race_name'] %></td>
+		            <td><%=h race['length'] %></td>
+		            <td><a href='/horse/<%=h race['nkid'] %>'><%=h race['horse'] %></a></td>
+		            <td><%=h race['jocky'] %>/<%=h race['owner'] %></td>
+		            <td><%=h race['r_place'] %>着<%=h race['pop'] %>人</td>
+		            <td style="text-align: right;"><%=h race['prize'] %></td>
+		          </tr>
+		          <% end %>
+		        </table>
+	          </div><!-- /box-content -->
+	        </div><!-- /box-container-toggle -->
+	      </div><!-- /box -->
+	    </div><!-- /#col2 -->
+      </div><!-- /.row-fluid -->
 <%= erb :sidebar_close, layout=>false %>

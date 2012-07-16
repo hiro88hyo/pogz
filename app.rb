@@ -12,13 +12,6 @@ helpers do
   include Rack::Utils
   alias_method :h, :escape_html
   alias_method :u, :escape
-  def horses
-    items = Array.new
-    Owner.find_horses_by_owner("エトゥ").asc(:year).each{|h|
-      items.push(h.horse['name'])
-    }
-    return items
-  end
 
   def map_reduce(from=nil, to=nil, year=nil, nkid=nil)
     hrs = {}
@@ -106,10 +99,32 @@ helpers do
     }
     return res.sort{|a, b| b['prize']<=>a['prize']}
   end
+  
+  def recent_race(n=10)
+  	res = []
+    Race.desc(:race_date).limit(n).each{|r|
+      horse = Owner.find_by_nkid(r.result['nkid'].to_i)
+      res.push({
+      	'nkid' => r.result['nkid'],
+      	'date' => r.race_date,
+      	'place' => r.place,
+      	'race_num' => r.race_num,
+      	'race_name' => r.name,
+      	'length' => r.length,
+      	'horse' => horse['name'],
+      	'jocky' => r.result['jocky'],
+      	'owner' => horse['owner'],
+      	'r_place' => r.result['place'],
+      	'pop' => r.result['popularity'],
+      	'prize' => r.result['prize']
+      })
+    }
+    return res
+  end
 end
 
 get '/' do
-  @items = horses()
+  @recent = recent_race()
   erb :index
 end
 
@@ -117,12 +132,10 @@ get '/horse/:nkid' do
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
   @results = map_reduce(nil, nil, nil, params[:nkid].to_i)
-  p @results
   erb :horse
 end
 
 get '/mapreduce' do
-  @items = horses()
   d_from = nil
   d_to = nil
   year = nil
