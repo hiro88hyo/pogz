@@ -53,13 +53,13 @@
 		          <% for race in @recent %>
 		          <tr>
 		            <td><%=h race['date'] %></td>
-		            <td><%=h race['place'] %><%=h race['race_num'] %>R</td>
+		            <td><%=h race['place'] %>&nbsp;<%=h race['race_num'] %>R</td>
 		            <td><%=h race['race_name'] %></td>
 		            <td><%=h race['length'] %></td>
 		            <td><a href='/horse/<%=h race['nkid'] %>'><%=h race['horse'] %></a></td>
 		            <td><%=h race['jocky'] %>/<%=h race['owner'] %></td>
 		            <td><%=h race['r_place'] %>着<%=h race['pop'] %>人</td>
-		            <td style="text-align: right;"><%=h race['prize'] %></td>
+		            <td style="text-align: right;"><%=h race['prize'] %>万円</td>
 		          </tr>
 		          <% end %>
 		        </table>
@@ -69,3 +69,4 @@
 	    </div><!-- /#col2 -->
       </div><!-- /.row-fluid -->
 <%= erb :sidebar_close, layout=>false %>
+<%= erb :morris, layout=>false %>
