@@ -9,8 +9,18 @@
 	    <div class="well" style="padding: 8px 0;">
 	      <ul class="nav nav-list">
 	        <li class="nav-header">Main</li>
-	        <li class="active"><a href="index.html"><i class="icon-home"></i> Dashboard</a></li>
-	        <li><a href="index.html"><i class="icon-th-list"></i> Horse</a></li>
+	        <% if @dashboard %>
+	          <li class="active">
+	        <% else %>
+	          <li>
+	        <% end %>
+	        <a href="/"><i class="icon-home"></i> Dashboard</a></li>
+	        <% if @horses %>
+	          <li class="active">
+	        <% else %>
+	          <li>
+	        <% end %>
+	        <a href="/horses"><i class="icon-th-list"></i> Horse</a></li>
 	        <li><a href="index.html"><i class="icon-facetime-video"></i> Race</a></li>
 	        <li class="nav-header">Analyze</li>
 	        <li class="nav-header">Settings</li>

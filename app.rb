@@ -26,6 +26,7 @@ helpers do
     ons.each{|h|
       hrs[h.horse['nkid']] = {
         'name' => h.horse['name'],
+        'sex' => h.horse['sex'],
         'owner' => h.name,
         'year' => h.year,
         'seq' => h.seq
@@ -85,6 +86,7 @@ helpers do
       res.push({
         'nkid' => r['_id']['nkid'].to_i,
         'name' => hrs[r['_id']['nkid'].to_i]['name'],
+        'sex' => hrs[r['_id']['nkid'].to_i]['sex'],
         'owner' => hrs[r['_id']['nkid'].to_i]['owner'],
         'year' => hrs[r['_id']['nkid'].to_i]['year'].to_i,
         'seq' => hrs[r['_id']['nkid'].to_i]['seq'].to_i,
@@ -125,20 +127,24 @@ end
 
 get '/' do
   @recent = recent_race()
+  @dashboard = true
   erb :index
 end
 
 get '/horse/:nkid' do
+  @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
   @results = map_reduce(nil, nil, nil, params[:nkid].to_i)
   erb :horse
 end
 
-get '/mapreduce' do
+get '/horses' do
+  @horses = true
   d_from = nil
   d_to = nil
   year = nil
+
   begin
     if params['from'] and params['to']
       d_from = Date.parse(params['from'])
@@ -159,6 +165,7 @@ get '/mapreduce' do
   rescue ArgumentError
     year = nil
   end
+
   @mr_results = map_reduce(d_from, d_to, year)
   @res_owner = @mr_results.group_by{|i|
     [i['owner'], i['year']]
