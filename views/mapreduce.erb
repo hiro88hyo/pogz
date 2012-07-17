@@ -6,10 +6,10 @@
   </div>
   <div class="row-fluid">
     <div class="span12 column" id="col1">
-	  <div class="box" id="box1">
-	    <h4 class="box-header round-top">成績ランキング</h4>
-	    <div class="box-container-toggle">
-	      <div class="box-content">
+      <div class="box" id="box1">
+	<h4 class="box-header round-top">成績ランキング</h4>
+	<div class="box-container-toggle">
+	  <div class="box-content">
             <table class="table table-striped">
               <tr><th colspan="2">馬名</th><th>オーナー</th><th>獲得賞金</th><th>出走回数</th><th>１着</th><th>２着</th><th>３着</th><th>４着</th><th>５着</th></tr>
               <% for r in @mr_results %>
@@ -32,5 +32,5 @@
       </div><!-- /box -->
     </div><!-- #col1 -->
   </div><!-- /row-fluid -->
-
-<%= erb :sidebar_close %>
+  
+  <%= erb :sidebar_close %>
