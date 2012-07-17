@@ -11,7 +11,15 @@
 	    <div class="box-container-toggle">
 	      <div class="box-content">
             <table class="table table-striped">
-              <tr><th colspan="2">馬名</th><th>オーナー</th><th>獲得賞金</th><th>出走回数</th><th>１着</th><th>２着</th><th>３着</th><th>４着</th><th>５着</th></tr>
+              <tr><th colspan="2">馬名</th>
+              <th>オーナー</th>
+              <th>獲得賞金</th>
+              <th>出走回数</th>
+              <th>１着</th>
+              <th>２着</th>
+              <th>３着</th>
+              <th>４着</th>
+              <th>５着</th></tr>
               <% for r in @mr_results %>
               <tr>
                 <td><a href='/horse/<%=h r['nkid'] %>'><%=h r['name'] %></a></td>
