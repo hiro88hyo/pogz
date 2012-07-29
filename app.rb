@@ -3,6 +3,7 @@ require 'rubygems'
 require 'sinatra'
 require 'date'
 require './models'
+require 'json'
 
 configure do
   Mongoid.load!('config/mongoid.yml')
@@ -13,15 +14,19 @@ helpers do
   alias_method :h, :escape_html
   alias_method :u, :escape
 
+  def to_c(n)
+    n.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
+  end
+
   def map_reduce(from=nil, to=nil, year=nil, nkid=nil)
+    # build horse list
     hrs = {}
-    if year
+    if nkid
+      ons = Owner.where('horse.nkid' => nkid)
+    elsif year
       ons = Owner.where(year: year)
     else
       ons = Owner.all()
-    end
-    if nkid
-      ons = Owner.where('horse.nkid' => nkid)
     end
     ons.each{|h|
       hrs[h.horse['nkid']] = {
@@ -74,6 +79,7 @@ helpers do
         return {prize:pr, count:co, p_1st:p1st, p_2nd:p2nd, p_3rd:p3rd, p_4th:p4th, p_5th: p5th};
       }
     }
+    # calcurate results
     res = []
     col = Race
     if year or nkid
@@ -102,9 +108,14 @@ helpers do
     return res.sort{|a, b| b['prize']<=>a['prize']}
   end
   
-  def recent_race(n=10)
+  def recent_race(n=nil)
   	res = []
-    Race.desc(:race_date).limit(n).each{|r|
+  	if n
+	  r = Race.desc(:race_date).limit(n)
+	else
+	  r = Race.desc(:race_date)
+	end
+    r.each{|r|
       horse = Owner.find_by_nkid(r.result['nkid'].to_i)
       res.push({
       	'nkid' => r.result['nkid'],
@@ -123,11 +134,98 @@ helpers do
     }
     return res
   end
+  
+  def aggregates_by_owner(results)
+    res = results.group_by{|i|
+      i['owner']
+    }.reduce({}){|r, kv|
+      res = {
+        'prize' => 0.0,
+        'races' => 0,
+        'p1' => 0,
+        'p2' => 0,
+        'p3' => 0,
+        'p4' => 0,
+        'p5' => 0
+      }
+      kv[1].each{|race|
+        res['prize'] += race['prize']
+        res['races'] += race['races']
+        res['p1'] += race['p1']
+        res['p2'] += race['p2']
+        res['p3'] += race['p3']
+        res['p4'] += race['p4']
+        res['p5'] += race['p5']
+      }
+      r.update({kv[0] => res})
+    }
+    return res
+  end
+  
+  def results_of_owner(from=nil, to=nil, year=nil)
+    # 馬別の成績を計算する
+  	@mr_results = map_reduce(from, to, year)
+    @res_owner = aggregates_by_owner(@mr_results)
+
+    # 個人順位を計算する
+    @res_owner_recalc = {}
+    if year
+      key = year
+    else
+      key = "all"
+    end
+  	@res_owner_recalc.update({key => {}})
+  	o = Owner.find_owners_by_year(year)
+  	o.each{|name|
+  	  @res_owner_recalc[key].update({name => 0})
+  	}
+    @res_owner.each_key{|name|
+      p = @res_owner[name]['prize'].to_i
+      @res_owner_recalc[key].each_key{|res_name|
+        prize = @res_owner_recalc[key][res_name].to_i
+        if res_name == name
+      	  @res_owner_recalc[key].update({res_name => prize + p * (@res_owner_recalc[key].length - 1)})
+        else
+     	  @res_owner_recalc[key].update({res_name => prize - p})
+        end
+      }
+    }
+    return {key => @res_owner_recalc[key].sort{|a,b|b[1]<=>a[1]}}
+  end
+  
+  def ranking(cur,prv)
+    cur.each_key{|k1|
+      cur[k1].each_index{|i|
+        prv[k1].each_index{|j|
+          if cur[k1][i][0] == prv[k1][j][0]
+            if i==j
+              cur[k1][i].push(0)
+            elsif i<j
+              cur[k1][i].push(1)
+            else
+              cur[k1][i].push(-1)
+            end
+          end
+        }
+      }
+    }
+    return cur
+  end
 end
 
+# Routes
 get '/' do
-  @recent = recent_race()
+  span1 = ["20120707","20120715"]
+  span2 = ["20120707","20120722"]
+
+  @recent = recent_race(10)
   @dashboard = true
+  prv = results_of_owner(Date.parse(span1[0]),Date.parse(span1[1]))
+  cur = results_of_owner(Date.parse(span2[0]),Date.parse(span2[1]))
+  
+  ranking = ranking(cur,prv)
+  @ranking_all = ranking['all']
+  
   erb :index
 end
 
@@ -139,7 +237,7 @@ get '/horse/:nkid' do
   erb :horse
 end
 
-get '/horses' do
+get '/horse' do
   @horses = true
   d_from = nil
   d_to = nil
@@ -164,43 +262,13 @@ get '/horses' do
     end
   rescue ArgumentError
     year = nil
-  end
-
+  end  
   @mr_results = map_reduce(d_from, d_to, year)
-  @res_owner = @mr_results.group_by{|i|
-    [i['owner'], i['year']]
-  }.reduce({}){|r, kv|
-    res = {
-      'prize' => 0.0,
-      'races' => 0,
-      'p1' => 0,
-      'p2' => 0,
-      'p3' => 0,
-      'p4' => 0,
-      'p5' => 0
-    }
-    kv[1].each{|race|
-      res['prize'] += race['prize']
-      res['races'] += race['races']
-      res['p1'] += race['p1']
-      res['p2'] += race['p2']
-      res['p3'] += race['p3']
-      res['p4'] += race['p4']
-      res['p5'] += race['p5']
-    }
-    r.update({kv[0] => res})
-  }
-  @res_owner_recalc = {}
-  @owners_key = {}
-
-  @res_owner.each_key{|k1|
-    @res_owner_recalc.update({k1 => @res_owner[k1]['prize']*(@res_owner.length-1)})
-    @res_owner.each_key{|k2|
-      if k1!=k2
-        @res_owner_recalc[k1] -= @res_owner[k2]['prize']
-      end
-    }
-  }
-  p @res_owner_recalc
   erb :mapreduce
+end
+
+get '/race' do
+  @race = true
+  @recent = Race.recent_races()
+  erb :races
 end

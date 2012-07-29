@@ -20,7 +20,7 @@
 	      <tr><th>調教師</th><td><%=h @horse['trainer'] %></td></tr>
 	      <tr><th>馬主</th><td><%=h @horse['real_owner'] %></td></tr>
 	      <tr><th>生産者</th><td><%=h @horse['farm'] %></td></tr>
-	      <tr><th>獲得賞金</th><td><%=h @results[0]['prize'] %>万円</td></tr>
+	      <tr><th>獲得賞金</th><td><%=to_c @results[0]['prize'].to_i %>万円</td></tr>
 	      <tr><th>通算成績</th>
 		<td><%=h @results[0]['races'] %>戦
 		  <%=h @results[0]['p1'] %>勝
@@ -91,7 +91,7 @@
                 <td style="text-align: right;"><%=h race['r_weight'] %></td>
                 <td><%=h race['length'] %></td>
                 <td><%=h race['condition'] %></td>
-                <td style="text-align: right;"><%=h race['r_prize'] %></td>
+                <td style="text-align: right;"><%=to_c race['r_prize'].to_i %>万円</td>
               </tr>
 	      <% end %>
             </table>

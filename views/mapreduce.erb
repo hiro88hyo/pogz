@@ -10,7 +10,7 @@
 	    <h4 class="box-header round-top">成績ランキング</h4>
 	    <div class="box-container-toggle">
 	      <div class="box-content">
-            <table class="table table-striped">
+            <table class="table table-striped table-condensed">
               <tr><th colspan="2">馬名</th>
               <th>オーナー</th>
               <th>獲得賞金</th>
@@ -25,7 +25,7 @@
                 <td><a href='/horse/<%=h r['nkid'] %>'><%=h r['name'] %></a></td>
                 <td>(<%=h r['year'] %>年生/<%=h r['sex']%>)</td>
                 <td><%=h r['owner'] %></td>
-                <td style="text-align: right"><%=h r['prize'] %>万円</td>
+                <td style="text-align: right"><%=to_c r['prize'].to_i %>万円</td>
                 <td style="text-align: right"><%=h r['races'] %>回</td>
                 <td style="text-align: right"><%=h r['p1'] %>回</td>
                 <td style="text-align: right"><%=h r['p2'] %>回</td>
