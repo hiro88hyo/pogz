@@ -10,18 +10,23 @@
 	  <ul class="nav nav-list">
 	    <li class="nav-header">Main</li>
 	    <% if @dashboard %>
-	    <li class="active">
-	      <% else %>
-	      <li>
-	        <% end %>
-	        <a href="/"><i class="icon-home"></i> Dashboard</a></li>
-	      <% if @horses %>
 	      <li class="active">
-	        <% else %>
-		<li>
-		  <% end %>
-		  <a href="/horses"><i class="icon-th-list"></i> Horse</a></li>
-	        <li><a href="index.html"><i class="icon-facetime-video"></i> Race</a></li>
+	    <% else %>
+	      <li>
+	    <% end %>
+	      <a href="/"><i class="icon-home"></i> Dashboard</a></li>
+	    <% if @horses %>
+	      <li class="active">
+	    <% else %>
+		  <li>
+		<% end %>
+		  <a href="/horse"><i class="icon-th-list"></i> Horse</a></li>
+	    <% if @race %>
+	      <li class="active">
+	    <% else %>
+	      <li>
+	    <% end %>
+	      <a href="/race"><i class="icon-facetime-video"></i> Race</a></li>
 	        <li class="nav-header">Analyze</li>
 	        <li class="nav-header">Settings</li>
 	        <li><a href="login.html"><i class="icon-user"></i> Profile</a></li>

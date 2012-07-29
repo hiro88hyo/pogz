@@ -38,6 +38,18 @@ class Owner
     return build_responce(Owner.where("horse.nkid" => id).first)
   end
 
+  def self.find_owners_by_year(year = nil)
+  	res = []
+  	if year
+  	 os = self.where(year: year)
+  	else
+  	 os = self.all()
+  	end
+    os.each{|o|
+       res.push o.name
+     }
+     return res.uniq
+  end
 end
 
 class Horse
@@ -90,6 +102,7 @@ class Race
       "condition" => r.condition,
       "horses_num" => r.horses_num,
       "r_nkid" =>  r.result['nkid'],
+      "r_hname" =>  r.result['name'],
       "r_post" =>  r.result['post'],
       "r_position" =>  r.result['position'],
       "r_odds" =>  r.result['odds'],
@@ -99,6 +112,17 @@ class Race
       "r_place" =>  r.result['place'],
       "r_prize" =>  r.result['prize']
     }
+  end
+
+  def self.recent_races()
+  	res = []
+  	r = self.desc(:race_date)
+  	if r
+      r.each{|race|
+        res.push(build_responce(race))
+      }  		
+  	end
+  	return res
   end
 
   def self.find_by_nkid(id)
@@ -117,6 +141,7 @@ class Result
   include Mongoid::Document
 
   field :nkid, type: Integer
+  field :name, type: String
   field :post, type: Integer
   field :position, type: Integer
   field :odds, type: Float
