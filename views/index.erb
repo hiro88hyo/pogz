@@ -10,6 +10,7 @@
 	        <h4 class="box-header round-top">現在の順位</h4>
 	        <div class="box-container-toggle">
 	          <div class="box-content">
+	            期間：<%=h @span[0].strftime("%Y/%m/%d") %>〜<%=h @span[1].strftime("%Y/%m/%d") %>
 		        <form class="form-inline">
 		          <div class="controls docs-input-sizes">
 		            <select class="span6" id="select01">

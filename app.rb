@@ -215,8 +215,8 @@ end
 
 # Routes
 get '/' do
-  span1 = ["20120707","20120715"]
-  span2 = ["20120707","20120722"]
+  span1 = ["20120707","20120722"]
+  span2 = ["20120707","20120729"]
 
   @recent = recent_race(10)
   @dashboard = true
@@ -225,7 +225,7 @@ get '/' do
   
   ranking = ranking(cur,prv)
   @ranking_all = ranking['all']
-  
+  @span = [Date.parse(span2[0]),Date.parse(span2[1])]
   erb :index
 end
 
