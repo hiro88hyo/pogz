@@ -152,3 +152,12 @@ class Result
   field :prize, type: Float, default: 0.0
   embedded_in :race
 end
+
+class Duration
+  include Mongoid::Document
+  
+  field :name, type: String
+  field :dtype, type: String
+  field :start, type: Date
+  field :end, type: Date
+end

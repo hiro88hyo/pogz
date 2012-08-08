@@ -53,6 +53,7 @@
 	        <div class="box-container-toggle">
 	          <div class="box-content">
 		        <table class="table table-striped table-condensed">
+		          <tr><th>日付</th><th>レース</th><th>レース名</th><th>距離</th><th>馬名</th><th>騎手/所有者</th><th>順位</th><th>賞金</th></tr>
 		          <% for race in @recent %>
 		          <tr>
 		            <td><%=h race['date'] %></td>
