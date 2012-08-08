@@ -3,7 +3,6 @@ require 'rubygems'
 require 'sinatra'
 require 'date'
 require './models'
-require 'json'
 
 configure do
   Mongoid.load!('config/mongoid.yml')
@@ -193,6 +192,7 @@ helpers do
     return {key => @res_owner_recalc[key].sort{|a,b|b[1]<=>a[1]}}
   end
   
+  # 過去からの順位の上下を追加して返す
   def ranking(cur,prv)
     cur.each_key{|k1|
       cur[k1].each_index{|i|
@@ -215,17 +215,19 @@ end
 
 # Routes
 get '/' do
-  span1 = ["20120707","20120722"]
-  span2 = ["20120707","20120729"]
+  span=[]
+  Duration.where(dtype: 'ranking').desc(:end).limit(2).each{|d|
+    span.push([d.start, d.end])
+  }
 
-  @recent = recent_race(10)
+  @recent = recent_race(15)
   @dashboard = true
-  prv = results_of_owner(Date.parse(span1[0]),Date.parse(span1[1]))
-  cur = results_of_owner(Date.parse(span2[0]),Date.parse(span2[1]))
+  prv = results_of_owner(span[1][0],span[1][1])
+  cur = results_of_owner(span[0][0],span[0][1])
   
   ranking = ranking(cur,prv)
   @ranking_all = ranking['all']
-  @span = [Date.parse(span2[0]),Date.parse(span2[1])]
+  @span = [span[0][0],span[0][1]]
   erb :index
 end
 
@@ -271,4 +273,33 @@ get '/race' do
   @race = true
   @recent = Race.recent_races()
   erb :races
+end
+
+get '/duration' do
+  @dur = Duration.all()
+  erb :dur_index
+end
+
+get '/duration/new' do
+  erb :dur_new
+end
+
+post '/duration/new' do
+  redirect '/'
+end
+
+get '/duration/:id' do |id|
+  erb :dur_show
+end
+
+get '/duration/edit/:id' do |id|
+  erb :dur_edit
+end
+
+put '/duration/update/:id' do |id|
+  erb :dur_show
+end
+
+delete '/duration/delete/:id' do
+  erb :dur_show
 end
