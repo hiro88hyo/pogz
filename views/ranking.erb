@@ -1,0 +1,10 @@
+<table class="table table-striped">
+  <% for rank in @ranking_all %>
+  <tr><td>
+  <% if rank[2]==-1 %><i class="icon-arrow-down"></i>
+  <% elsif rank[2]==1 %><i class="icon-arrow-up"></i>
+  <% else %><i class="icon-minus"></i>
+  <% end %></td>
+  <td style="text-align: right"><%=to_c rank[1] %>万円</td><td><%=h rank[0] %></td></tr>
+  <% end %>
+</table>

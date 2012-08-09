@@ -10,27 +10,17 @@
 	        <h4 class="box-header round-top">現在の順位</h4>
 	        <div class="box-container-toggle">
 	          <div class="box-content">
-	            期間：<%=h @span[0].strftime("%Y/%m/%d") %>〜<%=h @span[1].strftime("%Y/%m/%d") %>
+	            <p>期間：<%=h @span[0].strftime("%Y/%m/%d") %>〜<%=h @span[1].strftime("%Y/%m/%d") %></p>
 		        <form class="form-inline">
 		          <div class="controls docs-input-sizes">
-		            <select class="span6" id="select01">
-		              <option>総合</option>
-		              <option>2歳馬</option>
-		              <option>3歳馬</option>
-		              <option>4歳馬</option>
+		            <select class="span5" id="select01">
+		              <option value="all">総合</option>
+		              <option value="2012">2歳馬</option>
+		              <option value="2011">3歳馬</option>
 		            </select>
 		          </div><!-- /controls docs-input-sizes -->
 		        </form>
-		        <table class="table table-striped">
-		        <% for rank in @ranking_all %>
-		          <tr><td>
-		          <% if rank[2]==-1 %><i class="icon-arrow-down"></i>
-		          <% elsif rank[2]==1 %><i class="icon-arrow-up"></i>
-		          <% else %><i class="icon-minus"></i>
-		          <% end %></td>
-		          <td style="text-align: right"><%=to_c rank[1] %>万円</td><td><%=h rank[0] %></td></tr>
-		        <% end %>
-		        </table>
+		        <div id="ranking"></div>
 	          </div><!-- /box-content -->
 	        </div><!-- /box-container-toggle -->
 	      </div><!-- /box -->

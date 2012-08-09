@@ -23,5 +23,21 @@ $(function () {
     labels: ['だっち', 'ぽっくん', 'トモロ', 'コージ', 'エトゥ', 'しげZ'],
     lineColors: ['#6666FF','#66CCFF', '#663399', '#33CC33', '#CC3366', '#CCCC33']
   });
+  $.ajax({
+  	url: "/ranking",
+  	cache: false,
+  	success: function(html){
+  	  $("#ranking").html(html);
+  	}
+  });
+  $("#select01").change(function(){
+  	$.ajax({
+  	  url: "/ranking?year="+$("#select01").val(),
+  	  cache: false,
+  	  success: function(html){
+  	  	$("#ranking").html(html);
+  	  }
+  	});
+  });
       });
     </script>

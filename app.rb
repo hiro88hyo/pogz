@@ -219,16 +219,37 @@ get '/' do
   Duration.where(dtype: 'ranking').desc(:end).limit(2).each{|d|
     span.push([d.start, d.end])
   }
+  @span = [span[0][0],span[0][1]]
 
   @recent = recent_race(15)
   @dashboard = true
-  prv = results_of_owner(span[1][0],span[1][1])
-  cur = results_of_owner(span[0][0],span[0][1])
+  erb :index
+end
+
+get '/ranking' do
+  year = nil
+  begin
+    if params['year']
+      year = params['year'].to_i
+	  year = nil if year==0
+    end
+  rescue ArgumentError
+    year = nil
+  end
+  span=[]
+  Duration.where(dtype: 'ranking').desc(:end).limit(2).each{|d|
+    span.push([d.start, d.end])
+  }
+  prv = results_of_owner(span[1][0],span[1][1], year)
+  cur = results_of_owner(span[0][0],span[0][1], year)
   
   ranking = ranking(cur,prv)
-  @ranking_all = ranking['all']
-  @span = [span[0][0],span[0][1]]
-  erb :index
+  if year
+    @ranking_all = ranking[year]
+  else
+    @ranking_all = ranking['all']
+  end
+  erb :ranking,layout=>false 
 end
 
 get '/horse/:nkid' do
@@ -280,26 +301,27 @@ get '/duration' do
   erb :dur_index
 end
 
+get '/duration/edit/:id' do |id|
+  erb :dur_edit
+end
+
 get '/duration/new' do
   erb :dur_new
 end
 
 post '/duration/new' do
-  redirect '/'
+  redirect '/duration'
 end
 
 get '/duration/:id' do |id|
   erb :dur_show
 end
 
-get '/duration/edit/:id' do |id|
-  erb :dur_edit
-end
-
-put '/duration/update/:id' do |id|
+put '/duration/:id' do |id|
   erb :dur_show
 end
 
-delete '/duration/delete/:id' do
-  erb :dur_show
+delete '/duration/:id' do |id|
+  @id = id
+  erb :dur_delete
 end
