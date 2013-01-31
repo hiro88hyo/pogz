@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'rubygems'
 require 'sinatra'
+require 'json'
 require 'date'
 require './models'
 
@@ -249,7 +250,23 @@ get '/ranking' do
   else
     @ranking_all = ranking['all']
   end
-  erb :ranking,layout=>false 
+  erb :ranking, :layout=>false 
+end
+
+get '/ranking.json' do
+  content_type :json, :charset => 'utf-8'
+  
+  span = []
+  Duration.where(dtype: 'ranking').desc(:end).limit(10).each{|d|
+    r = {}
+    score = results_of_owner(d.start,d.end, nil)
+    r['period'] = d.end
+    score['all'].each{|s|
+      r[s[0]]=s[1]
+    }
+    span.push r
+  }
+  span.to_json
 end
 
 get '/horse/:nkid' do
@@ -292,8 +309,26 @@ end
 
 get '/race' do
   @race = true
-  @recent = Race.recent_races()
+  @recent = Race.recent_races(nil)
   erb :races
+end
+
+get '/race/:id' do |id|
+  @race = true
+  @races = Race.where(:race_id => id)
+  p @races
+  @races.each{|r|
+    p r.race_id
+    p r.race_date
+    p r.place
+    p r.race_num
+    p r.name
+    p r.length
+    p r.condition
+    p r.horses_num
+    p r.weather
+  }
+  erb :race_show
 end
 
 get '/duration' do
@@ -301,7 +336,8 @@ get '/duration' do
   erb :dur_index
 end
 
-get '/duration/edit/:id' do |id|
+get '/duration/:id' do |id|
+  @dur = Duration.where(:_id => id).first()
   erb :dur_edit
 end
 
@@ -309,16 +345,12 @@ get '/duration/new' do
   erb :dur_new
 end
 
-post '/duration/new' do
-  redirect '/duration'
-end
-
-get '/duration/:id' do |id|
-  erb :dur_show
-end
-
 put '/duration/:id' do |id|
   erb :dur_show
+end
+
+post '/duration/new' do
+  redirect '/duration'
 end
 
 delete '/duration/:id' do |id|

@@ -1,4 +1,4 @@
-<%= erb :sidebar, layout=>false %>
+<%= erb :sidebar, :layout=>false %>
   <div>
     <ul class="breadcrumb">
       <li>Durations</li>
@@ -16,12 +16,12 @@
 	          <% @i = 1 %>
 	          <% for d in @dur %>
 	          <tr>
-	            <td><%= @i %></td>
+	            <td><%=h @i %></td>
 	            <td><%=h d.dtype %></td>
 	            <td><%=h d.name %></td>
 	            <td><%=h d.start %></td>
 	            <td><%=h d.end %></td>
-	            <td><i class="icon-pencil"></i>&nbsp;<i class="icon-trash"></i></td>
+	            <td><a href="/duration/<%=h d._id%>"><i class="icon-pencil"></i></a>&nbsp;<i class="icon-trash"></i></td>
 	          </tr>
 	          <% @i += 1 %>
 	          <% end %>
@@ -31,4 +31,4 @@
       </div><!-- /box -->
     </div><!-- /span12 column -->
   </div><!-- row-fluid -->
-  <%= erb :sidebar_close, layout=>false %>
+  <%= erb :sidebar_close, :layout=>false %>
