@@ -108,19 +108,33 @@ class Race
       "r_odds" =>  r.result['odds'],
       "r_popularity" =>  r.result['popularity'],
       "r_jocky" =>  r.result['jocky'],
+      "r_owner" => Owner.find_by_nkid(r.result['nkid'])['owner'],
       "r_weight" =>  r.result['weight'],
       "r_place" =>  r.result['place'],
       "r_prize" =>  r.result['prize']
     }
   end
 
-  def self.recent_races()
+  def self.recent_races(owner)
   	res = []
+  	nkids = []
+
+  	if owner
+  	  owners = Owner.find_horses_by_owner(owner)
+  	  owners.each{|o|
+  	    nkids.push o.horse['nkid']
+  	  }
+  	end
+  	
   	r = self.desc(:race_date)
   	if r
       r.each{|race|
-        res.push(build_responce(race))
-      }  		
+      	if owner
+      	  res.push(build_responce(race)) if nkids.include?(race.result['nkid'])
+      	else
+          res.push(build_responce(race))
+        end
+      }
   	end
   	return res
   end
@@ -140,6 +154,7 @@ end
 class Result
   include Mongoid::Document
 
+  field :race_id, type: String
   field :nkid, type: Integer
   field :name, type: String
   field :post, type: Integer

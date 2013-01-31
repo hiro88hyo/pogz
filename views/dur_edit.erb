@@ -1,4 +1,4 @@
-<%= erb :sidebar, layout=>false %>
+<%= erb :sidebar, :layout=>false %>
   <div>
     <ul class="breadcrumb">
       <li>Durations</li>
@@ -10,15 +10,15 @@
     <form method="post" action="duration/<%=h @id %>" name="edit">
       <input type="hidden" name="_method" value="UPDATE">
       <label>Duration Type</label>
-      <input type="text" class="span3" name="dtype" placeholder="Enter duration identifier">
+      <input type="text" class="span3" name="dtype" value="<%=h @dur.dtype %>" placeholder="Enter duration identifier">
       <label>Duration Name</label>
-      <input type="text" class="span3" name="name"  placeholder="Enter duration name">
+      <input type="text" class="span3" name="name" value="<%=h @dur.name %>"  placeholder="Enter duration name">
       <label>Start Date</label>
-      <input type="text" class="span3" name="start" placeholder="Enter Start Date">
+      <input type="date" class="span3" name="start" value="<%=h @dur.start %>" placeholder="Enter Start Date">
       <label>End Date</label>
-      <input type="text" class="span3" name="end"   placeholder="Enter End Date">
+      <input type="date" class="span3" name="end"  value="<%=h @dur.end %>"  placeholder="Enter End Date">
       <a href="#" class="btn">Update</a>
     </form>
     </div><!-- /span12 column -->
   </div><!-- row-fluid -->
-  <%= erb :sidebar_close, layout=>false %>
+  <%= erb :sidebar_close, :layout=>false %>

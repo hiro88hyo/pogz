@@ -1,4 +1,4 @@
-<%= erb :sidebar, layout=>false %>
+<%= erb :sidebar, :layout=>false %>
   <div>
     <ul class="breadcrumb">
       <li>Races</li>
@@ -11,6 +11,7 @@
 	    <h4 class="box-header round-top">過去の成績</h4>
 	    <div class="box-container-toggle">
 	      <div class="box-content">
+	        <%= @recent.length %>&nbsp;races found
             <table class="table table-striped table-condensed" id="races">
               <tr><th>日付</th>
 		          <th>天気</th>
@@ -18,13 +19,10 @@
 		          <th>レース名</th>
 		          <th>距離</th>
 		          <th>馬名</th>
-		          <th>頭数</th>
-		          <th>枠</th>
-		          <th>馬番</th>
+		          <th>番/枠/頭</th>
 		          <th>オッズ</th>
-		          <th>人気</th>
-		          <th>順位</th>
-		          <th>騎手</th>
+		          <th>着/人</th>
+		          <th>騎手/所有者</th>
 		          <th>斤量</th>
 		          <th>賞金</th>
 		      </tr>
@@ -33,16 +31,13 @@
                 <td><%=h race['race_date'] %></td>
                 <td><%=h race['wheather'] %></td>
                 <td><%=h race['place'] %>&nbsp;<%=h race['race_num'] %>R</td>
-                <td><%=h race['name'] %></td>
+                <td><a href="/race/<%=h race['rid'] %>"><%=h race['name'] %></a></td>
                 <td><%=h race['length'] %>/<%=h race['condition'] %></td>
                 <td><a href="/horse/<%=h race['r_nkid'] %>"><%=h race['r_hname'] %></a></td>
-                <td style="text-align: right;"><%=h race['horses_num'] %></td>
-                <td style="text-align: right;"><%=h race['r_post'] %></td>
-                <td style="text-align: right;"><%=h race['r_position'] %></td>
+                <td style="text-align: right;"><%=h race['r_position'] %>番/<%=h race['r_post'] %>枠/<%=h race['horses_num'] %>頭</td>
                 <td style="text-align: right;"><%=h race['r_odds'] %></td>
-                <td style="text-align: right;"><%=h race['r_popularity'] %></td>
-                <td style="text-align: right;"><%=h race['r_place'] %></td>
-                <td><%=h race['r_jocky'] %></td>
+                <td style="text-align: right;"><%=h race['r_place'] %>着/<%=h race['r_popularity'] %>人</td>
+                <td><%=h race['r_jocky'] %>/<%=h race['r_owner'] %></td>
                 <td style="text-align: right;"><%=h race['r_weight'] %></td>
                 <td style="text-align: right;"><%=to_c race['r_prize'].to_i %>万円</td>
               </tr>
@@ -53,4 +48,4 @@
       </div><!-- /box -->
     </div><!-- /span12 column -->
   </div><!-- row-fluid -->
-  <%= erb :sidebar_close, layout=>false %>
+  <%= erb :sidebar_close, :layout=>false %>
