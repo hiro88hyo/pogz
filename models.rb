@@ -20,18 +20,26 @@ class Owner
   end
 
   def self.build_responce(o)
-    {"name" => o.horse['name'],
-      "owner" => o.name,
-      "year" => o.year,
-      "seq" => o.seq,
-      "sex" => o.horse['sex'],
-      "trainer" => o.horse['trainer'],
-      "father" => o.horse['father'],
-      "mother" => o.horse['mother'],
-      "bms" => o.horse['bms'],
-      "real_owner" => o.horse['real_owner'],
-      "farm" => o.horse['farm']
-    }
+    if o
+      retired = o.horse['status']=="retired"
+      { "nkid" => o.horse['nkid'],
+        "name" => o.horse['name'],
+        "retired" => retired,
+        "area" => o.horse['area'],
+        "owner" => o.name,
+        "year" => o.year,
+        "seq" => o.seq,
+        "sex" => o.horse['sex'],
+        "trainer" => o.horse['trainer'],
+        "father" => o.horse['father'],
+        "mother" => o.horse['mother'],
+        "bms" => o.horse['bms'],
+        "real_owner" => o.horse['real_owner'],
+        "farm" => o.horse['farm']
+      }
+    else
+      return nil
+    end
   end
 
   def self.find_by_nkid(id)
@@ -67,6 +75,10 @@ class Horse
   field :real_owner, type: String
   field :farm, type: String
   embedded_in :owners
+  
+  def self.find_by_nkid(id)
+    return self.where(nkid: id)
+  end
 end
 
 class Race

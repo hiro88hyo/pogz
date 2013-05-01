@@ -269,6 +269,34 @@ get '/ranking.json' do
   span.to_json
 end
 
+# start: model: horse
+get '/horse/edit/:nkid' do
+  @horses = true
+  @horse = Owner.find_by_nkid(params[:nkid].to_i)
+  if @horse
+    erb :horse_edit
+  else
+    status 404
+  end
+end
+
+put '/horse/update/:id' do
+  o = Owner.where("horse.nkid" => params[:nkid].to_i).first
+  o.update_attributes("horse.status" => params[:status])
+  o.update_attributes("horse.name" => params[:name])
+  o.update_attributes("horse.sex" => params[:sex])
+  o.update_attributes("horse.area" => params[:area])
+  o.update_attributes("horse.trainer" => params[:trainer])
+  o.update_attributes("horse.father" => params[:father])
+  o.update_attributes("horse.mother" => params[:mother])
+  o.update_attributes("horse.bms" => params[:bms])
+  o.update_attributes("horse.real_owner" => params[:real_owner])
+  o.update_attributes("horse.farm" => params[:farm])
+  o.save
+
+  redirect "/horse/#{params[:nkid]}"
+end
+
 get '/horse/:nkid' do
   @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
@@ -306,7 +334,9 @@ get '/horse' do
   @mr_results = map_reduce(d_from, d_to, year)
   erb :mapreduce
 end
+# end: model: horse
 
+# start: model: race
 get '/race' do
   @race = true
   @recent = Race.recent_races(nil)
@@ -315,21 +345,30 @@ end
 
 get '/race/:id' do |id|
   @race = true
+  @editable = true
   @races = Race.where(:race_id => id)
-  p @races
+  @recent = []
   @races.each{|r|
-    p r.race_id
-    p r.race_date
-    p r.place
-    p r.race_num
-    p r.name
-    p r.length
-    p r.condition
-    p r.horses_num
-    p r.weather
+    @recent.push(Race.build_responce(r))
   }
-  erb :race_show
+  erb :races
 end
+
+get '/race/edit/:id' do
+  @race = true
+  @r = Race.where("race_id" => params[:id]).where("result.nkid" => params[:horse].to_i).first
+  @owner = Owner.find_by_nkid(@r.result['nkid'])['owner']
+  erb :race_edit
+end
+
+put '/race/update/:id' do
+  @r = Race.where("race_id" => params[:id]).where("result.nkid" => params[:horse].to_i).first
+  @r.update_attributes("result.prize" => params[:prize].to_i)
+  @r.save
+
+  redirect "/race/#{params[:id]}"
+end
+# end: model: race
 
 get '/duration' do
   @dur = Duration.all()
