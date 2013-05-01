@@ -1,8 +1,8 @@
-<%= erb :sidebar, layout=>false %>
+<%= erb :sidebar, :layout=>false %>
   <div>
     <ul class="breadcrumb">
       <li><a href="/horses">Horses</a><span class="divider">/</span></li>
-      <li class="active"><%=h @horse['name'] %></li>
+      <li class="active"><%=h @horse['name'] %></li>
     </ul>
   </div>
   <div class="row-fluid">
@@ -12,7 +12,8 @@
 	  <%=h @horse['name'] %>（<%=h @horse['sex'] %>）
 	  &nbsp;&nbsp;<%=h @horse['year'] %>年生
 	  &nbsp;&nbsp;<%=h @horse['owner'] %>
-	  &nbsp;<%=h @horse['seq'] %>位指名馬
+	  &nbsp;<%=h @horse['seq'] %>位
+	  <%if @horse['retired'] %>（引退）<% end %>
 	</h4>
 	<div class="box-container-toggle">
 	  <div class="box-content">
@@ -30,6 +31,7 @@
 		  <%=h @results[0]['p4'] %>-
 		  <%=h @results[0]['p5'] %>]
 		</td></tr>
+	      <tr><td colspan="2" style="text-align: right;"><a href="/horse/edit/<%=h @horse['nkid']%>"><i class="icon-pencil"></i></a>&nbsp;<i class="icon-trash"></i></td></tr>
 	    </table>
 	  </div><!-- /box-content -->
 	</div><!-- /box-container-toggle -->
@@ -100,4 +102,4 @@
       </div><!-- /box -->
     </div><!-- /span12 -->
   </div><!-- /row-fluid -->
-  <%= erb :sidebar_close, layout=>false %>
+  <%= erb :sidebar_close, :layout=>false %>

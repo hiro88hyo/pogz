@@ -7,26 +7,27 @@
   
   <div class="row-fluid">
     <div class="span12 column" id="col1">
-	  <div class="box" id="box1">
-	    <h4 class="box-header round-top">過去の成績</h4>
-	    <div class="box-container-toggle">
-	      <div class="box-content">
-	        <%= @recent.length %>&nbsp;races found
+      <div class="box" id="box1">
+	<h4 class="box-header round-top">過去の成績</h4>
+	<div class="box-container-toggle">
+	  <div class="box-content">
+	    <%= @recent.length %>&nbsp;races found
             <table class="table table-striped table-condensed" id="races">
               <tr><th>日付</th>
-		          <th>天気</th>
-		          <th>開催</th>
-		          <th>レース名</th>
-		          <th>距離</th>
-		          <th>馬名</th>
-		          <th>番/枠/頭</th>
-		          <th>オッズ</th>
-		          <th>着/人</th>
-		          <th>騎手/所有者</th>
-		          <th>斤量</th>
-		          <th>賞金</th>
-		      </tr>
-	          <% for race in @recent %>
+		<th>天気</th>
+		<th>開催</th>
+		<th>レース名</th>
+		<th>距離</th>
+		<th>馬名</th>
+		<th>番/枠/頭</th>
+		<th>オッズ</th>
+		<th>着/人</th>
+		<th>騎手/所有者</th>
+		<th>斤量</th>
+		<th>賞金</th>
+		<% if @editable %><th></th><% end%>
+	      </tr>
+	      <% for race in @recent %>
               <tr>
                 <td><%=h race['race_date'] %></td>
                 <td><%=h race['wheather'] %></td>
@@ -34,14 +35,17 @@
                 <td><a href="/race/<%=h race['rid'] %>"><%=h race['name'] %></a></td>
                 <td><%=h race['length'] %>/<%=h race['condition'] %></td>
                 <td><a href="/horse/<%=h race['r_nkid'] %>"><%=h race['r_hname'] %></a></td>
-                <td style="text-align: right;"><%=h race['r_position'] %>番/<%=h race['r_post'] %>枠/<%=h race['horses_num'] %>頭</td>
+                <td style="text-align: right;"><%=h race['r_position'] %>/<%=h race['r_post'] %>/<%=h race['horses_num'] %></td>
                 <td style="text-align: right;"><%=h race['r_odds'] %></td>
                 <td style="text-align: right;"><%=h race['r_place'] %>着/<%=h race['r_popularity'] %>人</td>
                 <td><%=h race['r_jocky'] %>/<%=h race['r_owner'] %></td>
                 <td style="text-align: right;"><%=h race['r_weight'] %></td>
                 <td style="text-align: right;"><%=to_c race['r_prize'].to_i %>万円</td>
+		<% if @editable %>
+		<td><a href="/race/edit/<%=h race['rid'] %>?horse=<%=h race['r_nkid'] %>"><i class="icon-pencil"></i></a></td>
+		<% end %>
               </tr>
-	          <% end %>
+	      <% end %>
             </table>
           </div><!-- /box-content -->
         </div><!-- /box-container-toggle -->
