@@ -5,6 +5,8 @@ require 'json'
 require 'date'
 require './models'
 
+
+
 configure do
   Mongoid.load!('config/mongoid.yml')
 end
@@ -14,11 +16,17 @@ helpers do
   alias_method :h, :escape_html
   alias_method :u, :escape
 
+  #
+  # 数字を3桁毎にカンマで区切る
+  #
   def to_c(n)
     n.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
   end
-
-  def map_reduce(from=nil, to=nil, year=nil, nkid=nil)
+  
+  #
+  # mongodbのMapReduceを実行する
+  #
+  def map_reduce(from=nil, to=nil, year=nil, nkid=nil, owner=nil)
     # build horse list
     hrs = {}
     if nkid
@@ -28,42 +36,30 @@ helpers do
     else
       ons = Owner.all()
     end
+    
+    ons = ons.where(name: owner) if owner
+    
     ons.each{|h|
       hrs[h.horse['nkid']] = {
         'name' => h.horse['name'],
         'sex' => h.horse['sex'],
         'owner' => h.name,
         'year' => h.year,
-        'seq' => h.seq
+        'seq' => h.seq,
+        'retired' => h.horse['status']=="retired"?true:false
       }
     }
     m = %Q{
       function () {
         var key = {nkid:this.result.nkid};
-        var p_1st = 0, p_2nd = 0, p_3rd = 0, p_4th = 0, p_5th = 0;
+        var p=[0,0,0,0,0];
         var prize = this.result.prize;
-        switch(this.result.place){
-          case 1:
-            p_1st = 1;
-            break; //end
-          case 2:
-            p_2nd = 1;
-            break; //end
-          case 3:
-            p_3rd = 1;
-            break; //end
-          case 4:
-            p_4th = 1;
-            break; //end
-          case 5:
-            p_5th = 1;
-            break; //end
-        }
-        emit(key, {prize: prize, count: 1, p_1st: p_1st, p_2nd: p_2nd, p_3rd: p_3rd, p_4th: p_4th, p_5th: p_5th});
+        p[this.result.place-1] = 1
+        emit(key, {prize: prize, count: 1, p_1st: p[0], p_2nd: p[1], p_3rd: p[2], p_4th: p[3], p_5th: p[4]});
       }
     }
     
-    r = %Q{
+    reduce = %Q{
       function (key, values) {
         var pr = 0.0, co = 0;
         var p1st = 0, p2nd = 0, p3rd = 0, p4th = 0, p5th = 0;
@@ -81,16 +77,14 @@ helpers do
     }
     # calcurate results
     res = []
-    col = Race
-    if year or nkid
-      col = col.in('result.nkid' => hrs.keys)
-    end
+    col = Race.in('result.nkid' => hrs.keys)
     if from
       col = col.where(:race_date.gte => from.to_time).where(:race_date.lte => to.to_time)
     end
-    col.map_reduce(m, r).out(inline: true).each{|r|
+    col.map_reduce(m, reduce).out(inline: true).each{|r|
       res.push({
         'nkid' => r['_id']['nkid'].to_i,
+        'retired' => hrs[r['_id']['nkid'].to_i]['retired'],
         'name' => hrs[r['_id']['nkid'].to_i]['name'],
         'sex' => hrs[r['_id']['nkid'].to_i]['sex'],
         'owner' => hrs[r['_id']['nkid'].to_i]['owner'],
@@ -108,6 +102,9 @@ helpers do
     return res.sort{|a, b| b['prize']<=>a['prize']}
   end
   
+  #
+  # 直近のレースを取ってくる
+  #
   def recent_race(n=nil)
   	res = []
   	if n
@@ -129,12 +126,17 @@ helpers do
       	'owner' => horse['owner'],
       	'r_place' => r.result['place'],
       	'pop' => r.result['popularity'],
-      	'prize' => r.result['prize']
+        'prize' => r.result['prize'],
+        'isCount' => r.result['isCount']
       })
     }
     return res
   end
   
+  #
+  # 所有者毎に集計する
+  # mongodbのMapReduce結果をさらにrubyでMapReduceする
+  #
   def aggregates_by_owner(results)
     res = results.group_by{|i|
       i['owner']
@@ -162,9 +164,12 @@ helpers do
     return res
   end
   
+  #
+  # 馬別の成績と個人成績を集計する
+  #
   def results_of_owner(from=nil, to=nil, year=nil)
     # 馬別の成績を計算する
-  	@mr_results = map_reduce(from, to, year)
+    @mr_results = map_reduce(from, to, year)
     @res_owner = aggregates_by_owner(@mr_results)
 
     # 個人順位を計算する
@@ -174,11 +179,11 @@ helpers do
     else
       key = "all"
     end
-  	@res_owner_recalc.update({key => {}})
-  	o = Owner.find_owners_by_year(year)
-  	o.each{|name|
-  	  @res_owner_recalc[key].update({name => 0})
-  	}
+    @res_owner_recalc.update({key => {}})
+    o = Owner.find_owners_by_year(year)
+    o.each{|name|
+      @res_owner_recalc[key].update({name => 0})
+    }
     @res_owner.each_key{|name|
       p = @res_owner[name]['prize'].to_i
       @res_owner_recalc[key].each_key{|res_name|
@@ -193,7 +198,9 @@ helpers do
     return {key => @res_owner_recalc[key].sort{|a,b|b[1]<=>a[1]}}
   end
   
+  #
   # 過去からの順位の上下を追加して返す
+  #
   def ranking(cur,prv)
     cur.each_key{|k1|
       cur[k1].each_index{|i|
@@ -221,7 +228,6 @@ get '/' do
     span.push([d.start, d.end])
   }
   @span = [span[0][0],span[0][1]]
-
   @recent = recent_race(15)
   @dashboard = true
   erb :index
@@ -232,7 +238,7 @@ get '/ranking' do
   begin
     if params['year']
       year = params['year'].to_i
-	  year = nil if year==0
+      year = nil if year==0
     end
   rescue ArgumentError
     year = nil
@@ -269,31 +275,31 @@ get '/ranking.json' do
   span.to_json
 end
 
-# start: model: horse
+### controller: horse ###
 get '/horse/edit/:nkid' do
   @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   if @horse
     erb :horse_edit
   else
-    status 404
+    not_found
   end
 end
 
 put '/horse/update/:id' do
-  o = Owner.where("horse.nkid" => params[:nkid].to_i).first
-  o.update_attributes("horse.status" => params[:status])
-  o.update_attributes("horse.name" => params[:name])
-  o.update_attributes("horse.sex" => params[:sex])
-  o.update_attributes("horse.area" => params[:area])
-  o.update_attributes("horse.trainer" => params[:trainer])
-  o.update_attributes("horse.father" => params[:father])
-  o.update_attributes("horse.mother" => params[:mother])
-  o.update_attributes("horse.bms" => params[:bms])
-  o.update_attributes("horse.real_owner" => params[:real_owner])
-  o.update_attributes("horse.farm" => params[:farm])
-  o.save
-
+  @o = Owner.where("horse.nkid" => params[:nkid].to_i).first
+  @o.update_attributes("horse.status" => params[:status])
+  @o.update_attributes("horse.name" => params[:name])
+  @o.update_attributes("horse.sex" => params[:sex])
+  @o.update_attributes("horse.area" => params[:area])
+  @o.update_attributes("horse.trainer" => params[:trainer])
+  @o.update_attributes("horse.father" => params[:father])
+  @o.update_attributes("horse.mother" => params[:mother])
+  @o.update_attributes("horse.bms" => params[:bms])
+  @o.update_attributes("horse.real_owner" => params[:real_owner])
+  @o.update_attributes("horse.farm" => params[:farm])
+  @o.save
+  
   redirect "/horse/#{params[:nkid]}"
 end
 
@@ -301,7 +307,7 @@ get '/horse/:nkid' do
   @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
-  @results = map_reduce(nil, nil, nil, params[:nkid].to_i)
+  @results = map_reduce(nil, nil, nil, params[:nkid].to_i,nil)
   erb :horse
 end
 
@@ -310,7 +316,8 @@ get '/horse' do
   d_from = nil
   d_to = nil
   year = nil
-
+  owner =nil
+  
   begin
     if params['from'] and params['to']
       d_from = Date.parse(params['from'])
@@ -323,20 +330,23 @@ get '/horse' do
     d_from = nil
     d_to = nil
   end
-
+  
   begin
     if params['year']
       year = params['year'].to_i
     end
   rescue ArgumentError
     year = nil
-  end  
-  @mr_results = map_reduce(d_from, d_to, year)
+  end
+
+  owner = params['owner'] if params['owner']
+
+  @mr_results = map_reduce(d_from, d_to, year, nil, owner)
   erb :mapreduce
 end
-# end: model: horse
+### controller: horse ###
 
-# start: model: race
+### controller: race ###
 get '/race' do
   @race = true
   @recent = Race.recent_races(nil)
@@ -364,35 +374,59 @@ end
 put '/race/update/:id' do
   @r = Race.where("race_id" => params[:id]).where("result.nkid" => params[:horse].to_i).first
   @r.update_attributes("result.prize" => params[:prize].to_i)
+  @r.update_attributes("result.isCount" => params[:isCount]=="true"?true:false)
   @r.save
 
   redirect "/race/#{params[:id]}"
 end
-# end: model: race
+### controller: race ###
 
+### controller: duration ###
 get '/duration' do
-  @dur = Duration.all()
+  @dur = Duration.all().desc(:end)
   erb :dur_index
 end
 
-get '/duration/:id' do |id|
+get '/duration/new' do
+  @update = false
+  @method = "POST"
+  @dur = Duration.new(dtype: "ranking",
+                      name: "",
+                      start: Date::today,
+                      end: Date::today)
+  erb :dur_edit
+end
+
+get '/duration/edit/:id' do |id|
+  @update = true
+  @id = id
+  @method = "PUT"
   @dur = Duration.where(:_id => id).first()
   erb :dur_edit
 end
 
-get '/duration/new' do
-  erb :dur_new
-end
-
-put '/duration/:id' do |id|
-  erb :dur_show
+put '/duration/update/:id' do |id|
+  @dur = Duration.where(:_id => id).first()
+  @dur.update_attributes("dtype" => params[:dtype])
+  @dur.update_attributes("name" => params[:name])
+  @dur.update_attributes("start" => Date.parse(params[:start]))
+  @dur.update_attributes("end" => Date.parse(params[:end]))
+  @dur.save
+  redirect "/duration"
 end
 
 post '/duration/new' do
+  @dur = Duration.new(dtype: params[:dtype],
+                      name: params[:name],
+                      start: Date.parse(params[:start]),
+                      end: Date.parse(params[:end]))
+  @dur.save
   redirect '/duration'
 end
 
-delete '/duration/:id' do |id|
-  @id = id
-  erb :dur_delete
+delete '/duration/delete/:id' do |id|
+  @dur = Duration.where(:_id => id).first()
+  @dur.delete
+  redirect "/duration"
 end
+### controller: duration ###

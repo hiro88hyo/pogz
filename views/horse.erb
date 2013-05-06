@@ -75,7 +75,8 @@
 		<th>斤量</th>
 		<th>距離</th>
 		<th>状態</th>
-		<th>賞金</th></tr>
+		<th>賞金</th>
+		<th></th></tr>
 	      <% for race in @races %>
               <tr>
                 <td><%=h race['race_date'] %></td>
@@ -94,6 +95,7 @@
                 <td><%=h race['length'] %></td>
                 <td><%=h race['condition'] %></td>
                 <td style="text-align: right;"><%=to_c race['r_prize'].to_i %>万円</td>
+		<td><a href="/race/edit/<%=h race['rid'] %>?horse=<%=h race['r_nkid'] %>"><i class="icon-pencil"></i></a></td>
               </tr>
 	      <% end %>
             </table>

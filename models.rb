@@ -177,6 +177,7 @@ class Result
   field :weight, type: Float, default: 0.0
   field :place, type: Integer
   field :prize, type: Float, default: 0.0
+  field :isCount, type: Boolean, default: true
   embedded_in :race
 end
 

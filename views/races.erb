@@ -19,7 +19,6 @@
 		<th>レース名</th>
 		<th>距離</th>
 		<th>馬名</th>
-		<th>番/枠/頭</th>
 		<th>オッズ</th>
 		<th>着/人</th>
 		<th>騎手/所有者</th>
@@ -35,7 +34,6 @@
                 <td><a href="/race/<%=h race['rid'] %>"><%=h race['name'] %></a></td>
                 <td><%=h race['length'] %>/<%=h race['condition'] %></td>
                 <td><a href="/horse/<%=h race['r_nkid'] %>"><%=h race['r_hname'] %></a></td>
-                <td style="text-align: right;"><%=h race['r_position'] %>/<%=h race['r_post'] %>/<%=h race['horses_num'] %></td>
                 <td style="text-align: right;"><%=h race['r_odds'] %></td>
                 <td style="text-align: right;"><%=h race['r_place'] %>着/<%=h race['r_popularity'] %>人</td>
                 <td><%=h race['r_jocky'] %>/<%=h race['r_owner'] %></td>
