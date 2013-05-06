@@ -15,8 +15,8 @@
 		          <div class="controls docs-input-sizes">
 		            <select class="span5" id="select01">
 		              <option value="all">総合</option>
-		              <option value="2012">2歳馬</option>
-		              <option value="2011">3歳馬</option>
+		              <option value="2012">3歳馬</option>
+		              <option value="2011">4歳馬</option>
 		            </select>
 		          </div><!-- /controls docs-input-sizes -->
 		        </form>
@@ -50,7 +50,7 @@
 		            <td><%=h race['place'] %>&nbsp;<%=h race['race_num'] %>R</td>
 		            <td><%=h race['race_name'] %></td>
 		            <td><%=h race['length'] %></td>
-		            <td><a href='/horse/<%=h race['nkid'] %>'><%=h race['horse'] %></a></td>
+		            <td><a href="/horse/<%=h race['nkid'] %>"><% if race['isCount'] %><% else %>(引)<% end %><%=h race['horse'] %></a></td>
 		            <td><%=h race['jocky'] %>/<%=h race['owner'] %></td>
 		            <td><%=h race['r_place'] %>着<%=h race['pop'] %>人</td>
 		            <td style="text-align: right;"><%=h race['prize'] %>万円</td>

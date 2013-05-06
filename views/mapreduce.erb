@@ -22,7 +22,7 @@
               <th>５着</th></tr>
               <% for r in @mr_results %>
               <tr>
-                <td><a href='/horse/<%=h r['nkid'] %>'><%=h r['name'] %></a></td>
+                <td><a href="/horse/<%=h r['nkid'] %>"><% if r['retired'] %>(引)<% end %><%=h r['name'] %></a></td>
                 <td>(<%=h r['year'] %>年生/<%=h r['sex']%>)</td>
                 <td><%=h r['owner'] %></td>
                 <td style="text-align: right"><%=to_c r['prize'].to_i %>万円</td>
