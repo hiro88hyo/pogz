@@ -1,0 +1,10 @@
+box: wercker/ruby
+services:
+    - wercker/mongodb
+build:
+  steps:
+    - bundle-install
+deploy:
+  steps:
+    - heroku-deploy
+
