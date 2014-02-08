@@ -79,7 +79,7 @@
 		<th></th></tr>
 	      <% for race in @races %>
               <tr>
-                <td><%=h race['race_date'] %></td>
+                <td><% if race['r_isCount']=='false' then %>-<% end %><%=h race['race_date'] %></td>
                 <td><%=h race['wheather'] %></td>
                 <td><%=h race['place'] %></td>
                 <td style="text-align: right;"><%=h race['race_num'] %>R</td>

@@ -26,7 +26,7 @@ helpers do
   #
   # mongodbのMapReduceを実行する
   #
-  def map_reduce(from=nil, to=nil, year=nil, nkid=nil, owner=nil, calc_retired=nil)
+  def map_reduce(from=nil, to=nil, year=nil, nkid=nil, owner=nil)
     # build horse list
     hrs = {}
     if nkid
@@ -78,9 +78,6 @@ helpers do
     # calcurate results
     res = []
     col = Race.in('result.nkid' => hrs.keys)
-    if !calc_retired
-      col = col.where('result.isCount' => true)
-    end
     if from
       col = col.where(:race_date.gte => from.to_time).where(:race_date.lte => to.to_time)
     end
@@ -344,7 +341,7 @@ get '/horse' do
 
   owner = params['owner'] if params['owner']
 
-  @mr_results = map_reduce(d_from, d_to, year, nil, owner, true)
+  @mr_results = map_reduce(d_from, d_to, year, nil, owner)
   erb :mapreduce
 end
 ### controller: horse ###
@@ -371,7 +368,6 @@ get '/race/edit/:id' do
   @race = true
   @r = Race.where("race_id" => params[:id]).where("result.nkid" => params[:horse].to_i).first
   @owner = Owner.find_by_nkid(@r.result['nkid'])['owner']
-puts @r.result['isCount']
   erb :race_edit
 end
 
