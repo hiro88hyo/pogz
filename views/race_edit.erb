@@ -31,7 +31,7 @@
 		<tr><th>騎手/所有者</th><td><%=h @r.result['jocky'] %>/<%=h @owner %></td></tr>
 		<tr><th>斤量</th><td><%=h @r.result['weight'] %></td></tr>
 		<tr><th>賞金</th><td><input type="text" name="prize" value="<%=h @r.result['prize'] %>"></td></tr>
-		<tr><th>集計対象</th><td><input type="checkbox" name="isCount" value="true" <% if @r.result['isCount'] %>checked<% end %>></td></tr>
+		<tr><th>集計対象</th><td><input type="checkbox" name="isCount" value="true" <% if @r.result['isCount']==true then%>checked<% else %><% end %>></td></tr>
 	      </table>
 	      <button type="submit" class="btn">Update</button>
 	    </form>

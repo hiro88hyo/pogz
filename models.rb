@@ -123,7 +123,8 @@ class Race
       "r_owner" => Owner.find_by_nkid(r.result['nkid'])['owner'],
       "r_weight" =>  r.result['weight'],
       "r_place" =>  r.result['place'],
-      "r_prize" =>  r.result['prize']
+      "r_prize" =>  r.result['prize'],
+      "r_isCount" =>  r.result['isCount']
     }
   end
 
