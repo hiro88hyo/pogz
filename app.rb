@@ -310,7 +310,7 @@ get '/horse/:nkid' do
   @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
-  @results = map_reduce(nil, nil, nil, params[:nkid].to_i,nil)
+  @results = map_reduce(nil, nil, nil, params[:nkid].to_i, nil, true)
   erb :horse
 end
 
