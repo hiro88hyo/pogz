@@ -310,7 +310,7 @@ get '/horse/:nkid' do
   @horses = true
   @horse = Owner.find_by_nkid(params[:nkid].to_i)
   @races = Race.find_by_nkid(params[:nkid].to_i)
-  @results = map_reduce(nil, nil, nil, params[:nkid].to_i,nil)
+  @results = map_reduce(nil, nil, nil, params[:nkid].to_i, nil, true)
   erb :horse
 end
 
@@ -371,7 +371,6 @@ get '/race/edit/:id' do
   @race = true
   @r = Race.where("race_id" => params[:id]).where("result.nkid" => params[:horse].to_i).first
   @owner = Owner.find_by_nkid(@r.result['nkid'])['owner']
-puts @r.result['isCount']
   erb :race_edit
 end
 
