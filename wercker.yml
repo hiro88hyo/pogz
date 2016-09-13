@@ -4,7 +4,7 @@ services:
 build:
   steps:
     - rvm-use:
-        version: 2.2.5
+        version: ruby-2.2.5
     - bundle-install
 deploy:
   steps:
