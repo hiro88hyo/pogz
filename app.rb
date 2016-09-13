@@ -231,7 +231,7 @@ get '/' do
     span.push([d.start, d.end])
   }
   @span = [span[0][0],span[0][1]]
-  @recent = recent_race(15)
+  @recent = recent_race(50)
   @dashboard = true
   erb :index
 end
