@@ -3,6 +3,8 @@ services:
     - wercker/mongodb
 build:
   steps:
+    - rvm-use:
+        version: 2.2.5
     - bundle-install
 deploy:
   steps:
