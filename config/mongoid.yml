@@ -6,18 +6,18 @@ host = $3
 database = $4
 %>
 development:
-  sessions:
+  clients:
     default:
       database: learning
       hosts:
         - localhost:27017
 production:
-  sessions:
+  clients:
     default:
       database: <%= database %>
       hosts:
         - <%= host %>
-      username: <%= username %>
-      password: <%= password %>
-  options:
-    skip_version_check: true
+      options:
+        user: <%= username %>
+        password: <%= password %>
+

@@ -9,7 +9,7 @@ class Owner
   field :name, type: String
   field :year, type: Integer
   field :seq, type: Integer
-  embeds_one :horses
+  embeds_one :horse
 
   def self.find_horses_by_owner(name)
     self.where(name: name)
@@ -74,7 +74,7 @@ class Horse
   field :bms, type: String
   field :real_owner, type: String
   field :farm, type: String
-  embedded_in :owners
+  embedded_in :owner
   
   def self.find_by_nkid(id)
     return self.where(nkid: id)
@@ -93,7 +93,7 @@ class Race
   field :length, type: String
   field :condition, type: String
   field :horses_num, type: Integer
-  field :weather, type: String
+  field :wheather, type: String
   embeds_one :result
 
   def self.find_race_by_horse(name)
